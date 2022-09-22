@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 
-import { usePan, useRect, useSelect, useZoom } from '../canvas'
+import { useDelete, usePan, useRect, useSelect, useZoom } from '../canvas'
 import { RiCursorFill, TbRectangle, MdOutlineTextFields } from '../icons'
 import { IconButton } from '../components'
 
@@ -32,6 +32,7 @@ const Home: NextPage = () => {
   const whiteboardProps = usePan(canvasRef)
   useSelect(canvasRef, tool)
   useZoom(canvasRef)
+  useDelete(canvasRef)
   useRect(
     canvasRef,
     tool,

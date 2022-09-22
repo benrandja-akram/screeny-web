@@ -19,8 +19,6 @@ function useRect(
       y = evt.absolutePointer!.y
 
       rect = new fabric.Rect({
-        width: 0,
-        height: 0,
         left: x,
         top: y,
         fill: '#ff00006e',
@@ -29,8 +27,8 @@ function useRect(
         perPixelTargetFind: true,
         strokeUniform: true,
         objectCaching: false,
-        rx: 8,
-        ry: 8,
+        rx: 2,
+        ry: 2,
       })
 
       canvas.add(rect)
@@ -69,8 +67,8 @@ function useRect(
       if (evt.target?.type === 'rect') {
         if (evt.target?.scaleX !== 1 || evt.target?.scaleY !== 1) {
           evt.target
-            ?.set('rx' as any, 8 / evt.target!.scaleX!)
-            .set('ry' as any, 8 / evt.target!.scaleY!)
+            ?.set('rx' as any, 2 / evt.target!.scaleX!)
+            .set('ry' as any, 2 / evt.target!.scaleY!)
         }
       }
     }
@@ -85,6 +83,12 @@ function useRect(
         canvas.off('mouse:down', onMouseDown as any)
         canvas.off('mouse:move', onMouseMove as any)
         canvas.off('mouse:up', onMouseUp as any)
+        canvas.off('object:scaling', onObjectScaling as any)
+      }
+    } else {
+      canvas.on('object:scaling', onObjectScaling as any)
+
+      return () => {
         canvas.off('object:scaling', onObjectScaling as any)
       }
     }
