@@ -1,0 +1,40 @@
+import React, { useRef } from 'react'
+import { fabric } from 'fabric'
+
+function usePan(
+  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>
+): React.ComponentProps<'div'> {
+  const mouseRef = useRef({} as any)
+
+  return {
+    onMouseDown(evt) {
+      if (evt.button !== 1) return
+
+      mouseRef.current.isDown = true
+      mouseRef.current.lastPosX = evt.clientX
+      mouseRef.current.lastPosY = evt.clientY
+    },
+    onMouseMove(evt) {
+      if (!mouseRef.current.isDown) return
+      const canvas = canvasRef.current!
+
+      const vpt = canvas.viewportTransform!
+      vpt[4] += evt.clientX - mouseRef.current.lastPosX
+      vpt[5] += evt.clientY - mouseRef.current.lastPosY
+      canvas.requestRenderAll()
+      mouseRef.current.lastPosX = evt.clientX
+      mouseRef.current.lastPosY = evt.clientY
+    },
+    onMouseUp() {
+      const canvas = canvasRef.current!
+
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      canvas.setViewportTransform(canvas.viewportTransform!)
+      mouseRef.current.isDown = false
+      canvas.requestRenderAll()
+    },
+  }
+}
+
+export { usePan }
