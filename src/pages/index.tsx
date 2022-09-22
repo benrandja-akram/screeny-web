@@ -8,6 +8,7 @@ import {
   usePan,
   useRect,
   useSelect,
+  useWindowResize,
   useZoom,
 } from '../canvas'
 import {
@@ -28,13 +29,19 @@ const Home: NextPage = () => {
       width: window.innerWidth,
       height: window.innerHeight,
     })
-
     fabric.Object.prototype.cornerSize = 9
     fabric.Object.prototype.cornerColor = 'white'
     fabric.Object.prototype.transparentCorners = false
     fabric.Object.prototype.cornerStrokeColor = '#0d99ff'
     fabric.Object.prototype.borderColor = '#0d9affa0'
 
+    canvasRef.current.add(
+      new fabric.Textbox('Hi there fdasf fdaf ads', {
+        width: 500,
+      })
+        .setControlVisible('mb', false)
+        .setControlVisible('tb', false)
+    )
     return () => {
       canvasRef.current!.dispose()
     }
@@ -48,6 +55,7 @@ const Home: NextPage = () => {
   useDelete(canvasRef)
   useRect(canvasRef, tool, onFinish)
   useCircle(canvasRef, tool, onFinish)
+  useWindowResize(canvasRef)
 
   return (
     <div className="bg-gray-100">

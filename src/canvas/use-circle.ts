@@ -21,7 +21,7 @@ function useCircle(
       circle = new fabric.Circle({
         left: x,
         top: y,
-        fill: '#ff00006e',
+        fill: '#ff000008',
         stroke: 'red',
         strokeWidth: 4,
         perPixelTargetFind: true,

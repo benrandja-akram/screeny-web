@@ -21,7 +21,7 @@ function useRect(
       rect = new fabric.Rect({
         left: x,
         top: y,
-        fill: '#ff00006e',
+        fill: '#ff000008',
         stroke: 'red',
         strokeWidth: 4,
         perPixelTargetFind: true,
