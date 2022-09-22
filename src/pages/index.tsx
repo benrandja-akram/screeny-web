@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 
-import { usePan, useSelect, useZoom } from '../canvas'
+import { usePan, useRect, useSelect, useZoom } from '../canvas'
 import { RiCursorFill, TbRectangle, MdOutlineTextFields } from '../icons'
 import { IconButton } from '../components'
 
@@ -23,17 +23,8 @@ const Home: NextPage = () => {
     fabric.Object.prototype.cornerStrokeColor = '#0d99ff'
     fabric.Object.prototype.borderColor = '#0d9affa0'
 
-    const canvas = canvasRef.current
-    const circle = new fabric.Circle({
-      radius: 80,
-      fill: 'red',
-    })
-
-    canvas.add(circle)
-    circle.center()
-
     return () => {
-      canvas.dispose()
+      canvasRef.current!.dispose()
     }
   }, [])
 
@@ -41,9 +32,14 @@ const Home: NextPage = () => {
   const whiteboardProps = usePan(canvasRef)
   useSelect(canvasRef, tool)
   useZoom(canvasRef)
+  useRect(
+    canvasRef,
+    tool,
+    useCallback(() => setTool('select'), [])
+  )
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-100">
       <header className="fixed top-2 left-[calc(100vw/2-200px)] z-10 flex h-14 w-[400px] space-x-2 rounded-lg bg-white p-2 shadow">
         <IconButton
           isActive={tool === 'select'}

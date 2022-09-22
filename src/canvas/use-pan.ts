@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { fabric } from 'fabric'
 
 function usePan(
@@ -6,6 +6,22 @@ function usePan(
 ): React.ComponentProps<'div'> {
   const mouseRef = useRef({} as any)
 
+  useEffect(() => {
+    const canvas = canvasRef.current!
+    function onWheel(evt: fabric.IEvent<WheelEvent>) {
+      if (evt.e.ctrlKey) return
+      const vpt = canvas.viewportTransform!
+      vpt[5] -= evt.e.deltaY
+      canvas.requestRenderAll()
+    }
+    canvas.on('mouse:wheel', onWheel)
+
+    return () => {
+      canvas.off('mouse:wheel', onWheel as any)
+    }
+  }, [canvasRef])
+
+  // return div props to be injected into the canvas wrapper because fabric does not support mouse wheel click
   return {
     onMouseDown(evt) {
       if (evt.button !== 1) return
