@@ -8,6 +8,7 @@ import {
   usePan,
   useRect,
   useSelect,
+  useText,
   useWindowResize,
   useZoom,
 } from '../canvas'
@@ -35,13 +36,6 @@ const Home: NextPage = () => {
     fabric.Object.prototype.cornerStrokeColor = '#0d99ff'
     fabric.Object.prototype.borderColor = '#0d9affa0'
 
-    canvasRef.current.add(
-      new fabric.Textbox('Hi there fdasf fdaf ads', {
-        width: 500,
-      })
-        .setControlVisible('mb', false)
-        .setControlVisible('tb', false)
-    )
     return () => {
       canvasRef.current!.dispose()
     }
@@ -50,12 +44,14 @@ const Home: NextPage = () => {
   const onFinish = useCallback(() => setTool('select'), [])
   // tools
   const whiteboardProps = usePan(canvasRef)
-  useSelect(canvasRef, tool)
   useZoom(canvasRef)
+  useWindowResize(canvasRef)
   useDelete(canvasRef)
+
+  useSelect(canvasRef, tool)
   useRect(canvasRef, tool, onFinish)
   useCircle(canvasRef, tool, onFinish)
-  useWindowResize(canvasRef)
+  useText(canvasRef, tool, onFinish)
 
   return (
     <div className="bg-gray-100">
