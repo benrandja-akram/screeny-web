@@ -2,8 +2,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 
-import { useDelete, usePan, useRect, useSelect, useZoom } from '../canvas'
-import { RiCursorFill, TbRectangle, MdOutlineTextFields } from '../icons'
+import {
+  useCircle,
+  useDelete,
+  usePan,
+  useRect,
+  useSelect,
+  useZoom,
+} from '../canvas'
+import {
+  RiCursorFill,
+  TbRectangle,
+  MdOutlineTextFields,
+  MdOutlineCircle,
+} from '../icons'
 import { IconButton } from '../components'
 
 const Home: NextPage = () => {
@@ -28,16 +40,14 @@ const Home: NextPage = () => {
     }
   }, [])
 
+  const onFinish = useCallback(() => setTool('select'), [])
   // tools
   const whiteboardProps = usePan(canvasRef)
   useSelect(canvasRef, tool)
   useZoom(canvasRef)
   useDelete(canvasRef)
-  useRect(
-    canvasRef,
-    tool,
-    useCallback(() => setTool('select'), [])
-  )
+  useRect(canvasRef, tool, onFinish)
+  useCircle(canvasRef, tool, onFinish)
 
   return (
     <div className="bg-gray-100">
@@ -50,6 +60,12 @@ const Home: NextPage = () => {
         </IconButton>
         <IconButton isActive={tool === 'rect'} onClick={() => setTool('rect')}>
           <TbRectangle size={22} />
+        </IconButton>
+        <IconButton
+          isActive={tool === 'circle'}
+          onClick={() => setTool('circle')}
+        >
+          <MdOutlineCircle size={22} />
         </IconButton>
         <IconButton isActive={tool === 'text'} onClick={() => setTool('text')}>
           <MdOutlineTextFields size={22} />
