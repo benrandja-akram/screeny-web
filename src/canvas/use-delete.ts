@@ -7,7 +7,7 @@ function useDelete(
     const canvas = canvasRef.current!
 
     function onWindowKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Delete') {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
         canvas.remove(...canvas.getActiveObjects())
         canvas.discardActiveObject()
       }

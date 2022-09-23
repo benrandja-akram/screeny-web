@@ -13,6 +13,7 @@ import {
   useWindowResize,
   useZoom,
   useImage,
+  useSaveCanvas,
 } from '../canvas'
 import {
   RiCursorFill,
@@ -37,6 +38,8 @@ const Home: NextPage = () => {
       height: window.innerHeight,
     })
 
+    const canvas = canvasRef.current!
+
     fabric.Object.prototype.cornerSize = 9
     fabric.Object.prototype.cornerColor = 'white'
     fabric.Object.prototype.transparentCorners = false
@@ -44,7 +47,7 @@ const Home: NextPage = () => {
     fabric.Object.prototype.borderColor = '#0d9affa0'
 
     return () => {
-      canvasRef.current!.dispose()
+      canvas.dispose()
     }
   }, [])
 
@@ -54,6 +57,7 @@ const Home: NextPage = () => {
   useZoom(canvasRef)
   useWindowResize(canvasRef)
   useDelete(canvasRef)
+  useSaveCanvas(canvasRef)
 
   useSelect(canvasRef, tool)
   useRect(canvasRef, tool, onFinish)
@@ -99,7 +103,13 @@ const Home: NextPage = () => {
         >
           <BiEditAlt size={24} />
         </IconButton>
-        <IconButton {...btnProps}>
+        <IconButton
+          {...btnProps}
+          onClick={(evt) => {
+            btnProps.onClick?.(evt)
+            setTool('select')
+          }}
+        >
           <BiImageAdd size={24} />
         </IconButton>
         <input {...inputProps} />

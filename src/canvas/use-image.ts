@@ -16,17 +16,23 @@ function useImage(
       type: 'file',
       className: 'hidden',
       accept: 'image/*',
+      value: '',
       onChange(evt) {
         const file = evt.target.files?.item(0)
+        const reader = new FileReader()
+        reader.onload = () => {
+          const url = reader.result as string
 
-        if (file) {
-          const url = URL.createObjectURL(file)
           fabric.Image.fromURL(url, (img) => {
             img.scaleToWidth(Math.min(window.innerWidth / 4, img.width!))
             canvasRef.current?.add(img)
-            canvasRef.current?.setActiveObject(img)
             img.center()
+            canvasRef.current?.setActiveObject(img)
           })
+        }
+
+        if (file) {
+          reader.readAsDataURL(file)
         }
       },
     },
