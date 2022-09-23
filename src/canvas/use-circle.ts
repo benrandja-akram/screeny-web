@@ -21,12 +21,13 @@ function useCircle(
       circle = new fabric.Circle({
         left: x,
         top: y,
-        fill: '#ff000008',
-        stroke: 'red',
+        fill: '#00000001',
+        stroke: 'black',
         strokeWidth: 4,
         perPixelTargetFind: true,
         strokeUniform: true,
         objectCaching: false,
+        borderOpacityWhenMoving: 0,
       })
 
       canvas.add(circle)

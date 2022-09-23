@@ -21,14 +21,15 @@ function useRect(
       rect = new fabric.Rect({
         left: x,
         top: y,
-        fill: '#ff000008',
-        stroke: 'red',
+        fill: '#00000001',
+        stroke: 'black',
         strokeWidth: 4,
         perPixelTargetFind: true,
         strokeUniform: true,
         objectCaching: false,
         rx: 2,
         ry: 2,
+        borderOpacityWhenMoving: 0,
       })
 
       canvas.add(rect)
