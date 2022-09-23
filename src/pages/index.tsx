@@ -12,6 +12,7 @@ import {
   useText,
   useWindowResize,
   useZoom,
+  useImage,
 } from '../canvas'
 import {
   RiCursorFill,
@@ -20,6 +21,8 @@ import {
   MdOutlineTextFields,
   MdOutlineCircle,
   BiEditAlt,
+  BiImageAdd,
+  AiOutlineLine,
 } from '../icons'
 import { IconButton } from '../components'
 
@@ -57,9 +60,11 @@ const Home: NextPage = () => {
   useCircle(canvasRef, tool, onFinish)
   useText(canvasRef, tool, onFinish)
   useFreeDrawing(canvasRef, tool)
+  const [btnProps, inputProps] = useImage(canvasRef)
+
   return (
     <div className="bg-gray-100">
-      <header className="fixed top-2 left-[calc(100vw/2-200px)] z-10 flex h-14 w-[400px] space-x-2 rounded-lg bg-white p-2 shadow">
+      <header className="fixed top-2 left-[50%] z-10 flex h-14 -translate-x-[50%] space-x-2 rounded-lg bg-white p-2 shadow">
         <IconButton
           isActive={tool === 'select'}
           onClick={() => setTool('select')}
@@ -67,13 +72,23 @@ const Home: NextPage = () => {
           <RiCursorFill size={22} />
         </IconButton>
         <IconButton isActive={tool === 'rect'} onClick={() => setTool('rect')}>
-          <TbRectangle size={22} />
+          <TbRectangle size={24} />
         </IconButton>
         <IconButton
           isActive={tool === 'circle'}
           onClick={() => setTool('circle')}
         >
-          <MdOutlineCircle size={22} />
+          <MdOutlineCircle size={24} />
+        </IconButton>
+
+        <IconButton isActive={tool === 'line'} onClick={() => setTool('line')}>
+          <AiOutlineLine size={28} className="rotate-45" />
+        </IconButton>
+        <IconButton
+          isActive={tool === 'arrow'}
+          onClick={() => setTool('arrow')}
+        >
+          <TbArrowCurveLeft size={22} />
         </IconButton>
         <IconButton isActive={tool === 'text'} onClick={() => setTool('text')}>
           <MdOutlineTextFields size={22} />
@@ -82,14 +97,12 @@ const Home: NextPage = () => {
           isActive={tool === 'free-drawing'}
           onClick={() => setTool('free-drawing')}
         >
-          <BiEditAlt size={22} />
+          <BiEditAlt size={24} />
         </IconButton>
-        <IconButton
-          isActive={tool === 'arrow'}
-          onClick={() => setTool('arrow')}
-        >
-          <TbArrowCurveLeft size={22} />
+        <IconButton {...btnProps}>
+          <BiImageAdd size={24} />
         </IconButton>
+        <input {...inputProps} />
       </header>
       <div {...whiteboardProps}>
         <canvas ref={canvasEl} className="h-full w-full" />

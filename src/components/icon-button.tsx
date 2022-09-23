@@ -9,7 +9,7 @@ function IconButton({
   return (
     <button
       className={classNames(
-        'flex w-10 items-center justify-center rounded-lg transition',
+        'flex w-10 items-center justify-center rounded-lg transition active:bg-indigo-600',
         className,
         {
           'bg-indigo-600 text-white': isActive,
