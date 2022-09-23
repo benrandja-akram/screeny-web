@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
 import { getStroke } from 'perfect-freehand'
+import { Args } from '../types'
 
 type Point = {
   x: number
@@ -42,10 +43,7 @@ const options = {
   },
 }
 
-function useFreeDrawing(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>,
-  tool: string
-) {
+function useFreeDrawing({ canvasRef, tool, onFinish, save }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
     let isDown = false
@@ -77,6 +75,7 @@ function useFreeDrawing(
 
     function onMouseUp() {
       if (isDown) {
+        save()
         isDown = false
         points = []
         lastObject = undefined
@@ -94,7 +93,7 @@ function useFreeDrawing(
         canvas.off('mouse:up', onMouseUp as any)
       }
     }
-  }, [canvasRef, tool])
+  }, [canvasRef, tool, onFinish, save])
 }
 
 export { useFreeDrawing }

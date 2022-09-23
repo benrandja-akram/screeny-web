@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
+import { Args } from '../types'
 
-function useSaveCanvas(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>
-) {
+function useSaveCanvas({ canvasRef }: Args) {
   useEffect(() => {
     function onSave() {
       const canvas = canvasRef.current!

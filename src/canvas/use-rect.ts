@@ -1,11 +1,8 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
+import { Args } from '../types'
 
-function useRect(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>,
-  tool: string,
-  onFinish: () => void
-) {
+function useRect({ canvasRef, tool, onFinish, save }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
     let isDown = false
@@ -61,6 +58,7 @@ function useRect(
       if (isDown) {
         isDown = false
         onFinish()
+        save()
       }
     }
 
@@ -93,7 +91,7 @@ function useRect(
         canvas.off('object:scaling', onObjectScaling as any)
       }
     }
-  }, [canvasRef, tool, onFinish])
+  }, [canvasRef, tool, onFinish, save])
 }
 
 export { useRect }

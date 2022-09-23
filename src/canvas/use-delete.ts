@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
+import { Args } from '../types'
 
-function useDelete(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>
-) {
+function useDelete({ canvasRef }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
 

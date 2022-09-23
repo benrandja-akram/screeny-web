@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
+import { Args } from '../types'
 
-function useWindowResize(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>
-) {
+function useWindowResize({ canvasRef }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
 

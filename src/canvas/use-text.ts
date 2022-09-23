@@ -1,11 +1,8 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
+import { Args } from '../types'
 
-function useText(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>,
-  tool: string,
-  onFinish: () => void
-) {
+function useText({ canvasRef, tool, onFinish, save }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
 
@@ -25,6 +22,7 @@ function useText(
       // @ts-ignore
       text.enterEditing()
       canvas.requestRenderAll()
+      save()
     }
 
     if (tool === 'text') {
@@ -34,7 +32,7 @@ function useText(
         canvas.off('mouse:down', onMouseDown as any)
       }
     }
-  }, [canvasRef, tool, onFinish])
+  }, [canvasRef, tool, onFinish, save])
 }
 
 export { useText }

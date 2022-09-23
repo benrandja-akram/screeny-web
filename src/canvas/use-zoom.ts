@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
+import { Args } from '../types'
 
-function useZoom(canvasRef: React.MutableRefObject<fabric.Canvas | undefined>) {
+function useZoom({ canvasRef }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
     function onWheel(opt: fabric.IEvent<WheelEvent>) {

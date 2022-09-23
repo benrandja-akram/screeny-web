@@ -1,9 +1,11 @@
 import { useRef } from 'react'
 import { fabric } from 'fabric'
+import { Args } from '../types'
 
-function useImage(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>
-): [React.ComponentProps<'button'>, React.ComponentProps<'input'>] {
+function useImage({
+  canvasRef,
+  save,
+}: Args): [React.ComponentProps<'button'>, React.ComponentProps<'input'>] {
   const inputRef = useRef<HTMLInputElement>(null)
   return [
     {
@@ -28,6 +30,7 @@ function useImage(
             canvasRef.current?.add(img)
             img.center()
             canvasRef.current?.setActiveObject(img)
+            save()
           })
         }
 

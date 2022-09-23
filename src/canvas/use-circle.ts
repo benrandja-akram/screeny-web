@@ -1,11 +1,8 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
+import { Args } from '../types'
 
-function useCircle(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>,
-  tool: string,
-  onFinish: () => void
-) {
+function useCircle({ canvasRef, tool, onFinish, save }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
     let isDown = false
@@ -59,10 +56,11 @@ function useCircle(
       canvas.renderAll()
     }
 
-    function onMouseUp(evt: fabric.IEvent<MouseEvent>) {
+    function onMouseUp() {
       if (isDown) {
         isDown = false
         onFinish()
+        save()
       }
     }
 
@@ -77,7 +75,7 @@ function useCircle(
         canvas.off('mouse:up', onMouseUp as any)
       }
     }
-  }, [canvasRef, tool, onFinish])
+  }, [canvasRef, tool, onFinish, save])
 }
 
 export { useCircle }

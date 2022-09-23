@@ -1,9 +1,7 @@
 import { useEffect } from 'react'
+import { Args } from '../types'
 
-function useSelect(
-  canvasRef: React.MutableRefObject<fabric.Canvas | undefined>,
-  tool: string
-) {
+function useSelect({ canvasRef, tool }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
     if (tool === 'select') {
