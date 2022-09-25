@@ -54,7 +54,6 @@ const Home: NextPage = () => {
 
     const save = () => {
       if (canSaveRef.current) {
-        console.log('modified')
         historyManager.current.push(canvas.toJSON())
       }
     }
@@ -157,6 +156,10 @@ const Home: NextPage = () => {
             canvasRef.current!.loadFromJSON(
               historyManager.current.state ?? '{}',
               () => {
+                canvasRef.current?.getObjects().map((obj) => {
+                  obj.selectable = canvasRef.current?.selection
+                  obj.evented = canvasRef.current?.selection
+                })
                 canSaveRef.current = true
               }
             )
@@ -172,6 +175,10 @@ const Home: NextPage = () => {
             canvasRef.current!.loadFromJSON(
               historyManager.current.state,
               () => {
+                canvasRef.current?.getObjects().map((obj) => {
+                  obj.selectable = canvasRef.current?.selection
+                  obj.evented = canvasRef.current?.selection
+                })
                 canSaveRef.current = true
               }
             )
