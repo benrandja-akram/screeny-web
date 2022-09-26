@@ -10,7 +10,6 @@
     "vercel-build": "yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && next build"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.30",
     "@tanstack/react-query": "^4.3.9",
     "@types/fabric": "^4.5.12",
     "classnames": "^2.3.2",
