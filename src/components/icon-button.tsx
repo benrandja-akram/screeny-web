@@ -13,7 +13,7 @@ function IconButton({
   return (
     <button
       className={classNames(
-        'flex items-center justify-center rounded-lg transition focus:outline-none active:bg-indigo-600',
+        'flex items-center justify-center rounded-lg transition focus:outline-none active:text-indigo-600',
         className,
         {
           'bg-indigo-600 text-white': isActive,

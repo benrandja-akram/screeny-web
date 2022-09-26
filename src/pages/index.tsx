@@ -27,6 +27,8 @@ import {
   AiOutlineLine,
   BiUndo,
   BiRedo,
+  BiZoomOut,
+  BiZoomIn,
 } from '../icons'
 import { IconButton } from '../components'
 import { Args } from '../types'
@@ -63,12 +65,25 @@ const Home: NextPage = () => {
         save()
       }
     }
+    function onSelectionCreated() {
+      canvas.getActiveObject().perPixelTargetFind = false
+    }
+    function onSelectionCleared(evt: fabric.IEvent) {
+      // @ts-ignore
+      evt.deselected?.forEach(
+        (obj: fabric.Object) => (obj.perPixelTargetFind = true)
+      )
+    }
     canvas.on('object:modified', save)
     canvas.on('object:removed', onRemove)
+    canvas.on('selection:created', onSelectionCreated)
+    canvas.on('selection:cleared', onSelectionCleared)
 
     return () => {
       canvas.off('object:modified', save)
       canvas.off('object:removed', onRemove)
+      canvas.off('selection:created', onSelectionCreated)
+      canvas.off('selection:cleared', onSelectionCleared)
 
       canvas.dispose()
     }
@@ -147,45 +162,80 @@ const Home: NextPage = () => {
         </IconButton>
         <input {...inputProps} />
       </header>
-      <header className="fixed top-3 right-6 z-10 flex space-x-1 rounded-lg bg-white p-1 px-2 shadow">
-        <IconButton
-          size="small"
-          onClick={() => {
-            historyManager.current.undo()
-            canSaveRef.current = false
-            canvasRef.current!.loadFromJSON(
-              historyManager.current.state ?? '{}',
-              () => {
-                canvasRef.current?.getObjects().map((obj) => {
-                  obj.selectable = canvasRef.current?.selection
-                  obj.evented = canvasRef.current?.selection
-                })
-                canSaveRef.current = true
+      <header className="fixed top-2 right-4 z-10 flex items-center rounded-lg bg-white p-1 px-2 shadow">
+        <div className="flex space-x-1">
+          <IconButton
+            size="small"
+            onClick={() => {
+              historyManager.current.undo()
+              canSaveRef.current = false
+              canvasRef.current!.loadFromJSON(
+                historyManager.current.state ?? '{}',
+                () => {
+                  canvasRef.current?.getObjects().map((obj) => {
+                    obj.selectable = canvasRef.current?.selection
+                    obj.evented = canvasRef.current?.selection
+                    obj.perPixelTargetFind = true
+                  })
+                  canSaveRef.current = true
+                }
+              )
+            }}
+          >
+            <BiUndo size={22} />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => {
+              historyManager.current.redo()
+              canSaveRef.current = false
+              canvasRef.current!.loadFromJSON(
+                historyManager.current.state,
+                () => {
+                  canvasRef.current?.getObjects().map((obj) => {
+                    obj.selectable = canvasRef.current?.selection
+                    obj.evented = canvasRef.current?.selection
+                    obj.perPixelTargetFind = true
+                  })
+                  canSaveRef.current = true
+                }
+              )
+            }}
+          >
+            <BiRedo size={22} />
+          </IconButton>
+        </div>
+        <div className="mx-3 h-4 w-px bg-gray-200" />
+        <div className="flex space-x-1">
+          <IconButton
+            size="small"
+            onClick={() => {
+              if (canvasRef.current) {
+                const center = canvasRef.current.getCenter()
+                canvasRef.current.zoomToPoint(
+                  new fabric.Point(center.left, center.top),
+                  Math.max(0.01, canvasRef.current?.getZoom() - 0.1)
+                )
               }
-            )
-          }}
-        >
-          <BiUndo size={22} />
-        </IconButton>
-        <IconButton
-          size="small"
-          onClick={() => {
-            historyManager.current.redo()
-            canSaveRef.current = false
-            canvasRef.current!.loadFromJSON(
-              historyManager.current.state,
-              () => {
-                canvasRef.current?.getObjects().map((obj) => {
-                  obj.selectable = canvasRef.current?.selection
-                  obj.evented = canvasRef.current?.selection
-                })
-                canSaveRef.current = true
+            }}
+          >
+            <BiZoomOut size={22} />
+          </IconButton>
+          <IconButton
+            size="small"
+            onClick={() => {
+              if (canvasRef.current) {
+                const center = canvasRef.current.getCenter()
+                canvasRef.current.zoomToPoint(
+                  new fabric.Point(center.left, center.top),
+                  Math.min(20, canvasRef.current?.getZoom() + 0.1)
+                )
               }
-            )
-          }}
-        >
-          <BiRedo size={22} />
-        </IconButton>
+            }}
+          >
+            <BiZoomIn size={22} />
+          </IconButton>
+        </div>
       </header>
 
       <div {...whiteboardProps}>
