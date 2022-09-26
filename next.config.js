@@ -2,12 +2,9 @@
 const nextConfig = {
   reactStrictMode: false,
   webpack(config) {
-    config.resolve = {
-      ...config.resolve,
-      alias: {
-        fabric: 'fabric-pure-browser',
-        ...config.resolve.alias,
-      },
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      fabric: 'fabric-pure-browser',
     }
 
     return config
