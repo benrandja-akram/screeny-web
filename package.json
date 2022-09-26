@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "LD_LIBRARY_PATH=/var/task/node_modules/canvas/build/Release && yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/"
+    "now-build": "yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && npm run build"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.3.9",
     "@types/fabric": "^4.5.12",
     "classnames": "^2.3.2",
     "fabric": "^5.2.4",
+    "fabric-pure-browser": "^5.1.0",
     "next": "^12.3.1",
     "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",
