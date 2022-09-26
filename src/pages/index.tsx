@@ -19,12 +19,10 @@ import {
 import {
   RiCursorFill,
   TbRectangle,
-  TbArrowCurveLeft,
   MdOutlineTextFields,
   MdOutlineCircle,
   BiEditAlt,
   BiImageAdd,
-  AiOutlineLine,
   BiUndo,
   BiRedo,
   BiZoomOut,
@@ -133,15 +131,6 @@ const Home: NextPage = () => {
           <MdOutlineCircle size={24} />
         </IconButton>
 
-        <IconButton isActive={tool === 'line'} onClick={() => setTool('line')}>
-          <AiOutlineLine size={28} className="rotate-45" />
-        </IconButton>
-        <IconButton
-          isActive={tool === 'arrow'}
-          onClick={() => setTool('arrow')}
-        >
-          <TbArrowCurveLeft size={22} />
-        </IconButton>
         <IconButton isActive={tool === 'text'} onClick={() => setTool('text')}>
           <MdOutlineTextFields size={22} />
         </IconButton>
