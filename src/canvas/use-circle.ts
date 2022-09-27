@@ -15,7 +15,7 @@ function useCircle({ canvasRef, tool, onFinish, save }: Args) {
         left: x,
         top: y,
         fill: '#00000001',
-        stroke: 'black',
+        stroke: '#dc2626',
         strokeWidth: 4,
         perPixelTargetFind: true,
         strokeUniform: true,

@@ -20,6 +20,30 @@ function useSelect({ canvasRef, tool }: Args) {
       canvas.requestRenderAll()
     }
   }, [canvasRef, tool])
+
+  useEffect(() => {
+    const canvas = canvasRef.current!
+
+    function onSelectionCreated() {
+      if (!['polygon'].includes(canvas.getActiveObject().type!)) {
+        canvas.getActiveObject().perPixelTargetFind = false
+      }
+    }
+    function onSelectionCleared(evt: fabric.IEvent) {
+      // @ts-ignore
+      evt.deselected?.forEach(
+        (obj: fabric.Object) => (obj.perPixelTargetFind = true)
+      )
+    }
+
+    canvas.on('selection:created', onSelectionCreated)
+    canvas.on('selection:cleared', onSelectionCleared)
+
+    return () => {
+      canvas.off('selection:created', onSelectionCreated)
+      canvas.off('selection:cleared', onSelectionCleared)
+    }
+  }, [canvasRef])
 }
 
 export { useSelect }

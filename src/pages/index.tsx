@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 
@@ -15,6 +15,7 @@ import {
   useImage,
   useSaveCanvas,
   HistoryManager,
+  useLine,
 } from '../canvas'
 import {
   RiCursorFill,
@@ -27,9 +28,11 @@ import {
   BiRedo,
   BiZoomOut,
   BiZoomIn,
+  AiOutlineLine,
 } from '../icons'
 import { IconButton } from '../components'
 import { useCallbackRef } from '../utils'
+import { setupShapeControls } from '../utils/setup-shape-controls'
 
 const Home: NextPage = () => {
   const [tool, setTool] = useState('select')
@@ -63,25 +66,13 @@ const Home: NextPage = () => {
         save()
       }
     }
-    function onSelectionCreated() {
-      canvas.getActiveObject().perPixelTargetFind = false
-    }
-    function onSelectionCleared(evt: fabric.IEvent) {
-      // @ts-ignore
-      evt.deselected?.forEach(
-        (obj: fabric.Object) => (obj.perPixelTargetFind = true)
-      )
-    }
+
     canvas.on('object:modified', save)
     canvas.on('object:removed', onRemove)
-    canvas.on('selection:created', onSelectionCreated)
-    canvas.on('selection:cleared', onSelectionCleared)
 
     return () => {
       canvas.off('object:modified', save)
       canvas.off('object:removed', onRemove)
-      canvas.off('selection:created', onSelectionCreated)
-      canvas.off('selection:cleared', onSelectionCleared)
 
       canvas.dispose()
     }
@@ -108,6 +99,7 @@ const Home: NextPage = () => {
   useSelect(options)
   useRect(options)
   useCircle(options)
+  useLine(options)
   useText(options)
   useFreeDrawing(options)
   const [btnProps, inputProps] = useImage(options)
@@ -129,6 +121,9 @@ const Home: NextPage = () => {
           onClick={() => setTool('circle')}
         >
           <MdOutlineCircle size={24} />
+        </IconButton>
+        <IconButton isActive={tool === 'line'} onClick={() => setTool('line')}>
+          <AiOutlineLine size={28} className="rotate-45" />
         </IconButton>
 
         <IconButton isActive={tool === 'text'} onClick={() => setTool('text')}>
@@ -165,6 +160,14 @@ const Home: NextPage = () => {
                     obj.selectable = canvasRef.current?.selection
                     obj.evented = canvasRef.current?.selection
                     obj.perPixelTargetFind = true
+                    obj.objectCaching = false
+                    if (obj.type === 'polygon') {
+                      obj.hasBorders = false
+                      setupShapeControls(
+                        canvasRef.current!,
+                        obj as fabric.Polygon
+                      )
+                    }
                   })
                   canSaveRef.current = true
                 }
@@ -185,6 +188,15 @@ const Home: NextPage = () => {
                     obj.selectable = canvasRef.current?.selection
                     obj.evented = canvasRef.current?.selection
                     obj.perPixelTargetFind = true
+                    obj.objectCaching = false
+
+                    if (obj.type === 'polygon') {
+                      obj.hasBorders = false
+                      setupShapeControls(
+                        canvasRef.current!,
+                        obj as fabric.Polygon
+                      )
+                    }
                   })
                   canSaveRef.current = true
                 }
