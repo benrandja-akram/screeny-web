@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { Args } from '../types'
 
 function useSaveCanvas({ canvasRef }: Args) {
   useEffect(() => {

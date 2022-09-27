@@ -4,5 +4,3 @@ type Args = {
   onFinish: () => void
   save: () => void
 }
-
-export { Args }

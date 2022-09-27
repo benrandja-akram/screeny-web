@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
 import { getStroke } from 'perfect-freehand'
-import { Args } from '../types'
 
 type Point = {
   x: number

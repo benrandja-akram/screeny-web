@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { fabric } from 'fabric'
-import { Args } from '../types'
 
 function useText({ canvasRef, tool, onFinish, save }: Args) {
   useEffect(() => {

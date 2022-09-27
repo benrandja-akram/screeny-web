@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { fabric } from 'fabric'
-import { Args } from '../types'
 
-function usePan({ canvasRef,  }: Args): React.ComponentProps<'div'> {
+function usePan({ canvasRef }: Args): React.ComponentProps<'div'> {
   const mouseRef = useRef({} as any)
 
   useEffect(() => {

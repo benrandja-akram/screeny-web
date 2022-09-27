@@ -29,7 +29,7 @@ import {
   BiZoomIn,
 } from '../icons'
 import { IconButton } from '../components'
-import { Args } from '../types'
+import { useCallbackRef } from '../utils'
 
 const Home: NextPage = () => {
   const [tool, setTool] = useState('select')
@@ -90,12 +90,12 @@ const Home: NextPage = () => {
   const options: Args = {
     canvasRef,
     tool,
-    onFinish: useCallback(() => {
+    onFinish: useCallbackRef(() => {
       setTool('select')
-    }, []),
-    save: useCallback(() => {
+    }),
+    save: useCallbackRef(() => {
       historyManager.current.push(canvasRef.current!.toJSON())
-    }, []),
+    }),
   }
 
   // tools

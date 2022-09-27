@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { Args } from '../types'
 
 function useDelete({ canvasRef }: Args) {
   useEffect(() => {

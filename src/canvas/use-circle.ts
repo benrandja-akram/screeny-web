@@ -1,21 +1,17 @@
-import { useEffect } from 'react'
 import { fabric } from 'fabric'
-import { Args } from '../types'
+import { useDrag } from './use-drag'
 
 function useCircle({ canvasRef, tool, onFinish, save }: Args) {
-  useEffect(() => {
-    const canvas = canvasRef.current!
-    let isDown = false
-    let x = 0
-    let y = 0
-    let circle: fabric.Circle
-
-    function onMouseDown(evt: fabric.IEvent<MouseEvent>) {
-      isDown = true
-      x = evt.absolutePointer!.x
-      y = evt.absolutePointer!.y
-
-      circle = new fabric.Circle({
+  useDrag<fabric.Circle>({
+    canvasRef,
+    tool,
+    onFinish,
+    save,
+    isActive() {
+      return tool === 'circle'
+    },
+    onMouseDown(evt, { x, y }) {
+      return new fabric.Circle({
         left: x,
         top: y,
         fill: '#00000001',
@@ -26,15 +22,8 @@ function useCircle({ canvasRef, tool, onFinish, save }: Args) {
         objectCaching: false,
         borderOpacityWhenMoving: 0,
       })
-
-      canvas.add(circle)
-      canvas.renderAll()
-      canvas.setActiveObject(circle)
-    }
-
-    function onMouseMove(evt: fabric.IEvent<MouseEvent>) {
-      if (!isDown) return
-
+    },
+    onMouseMove(evt, { x, y, shape: circle }) {
       const w = Math.abs(evt.absolutePointer!.x - x)
       const h = Math.abs(evt.absolutePointer!.y - y)
 
@@ -53,29 +42,8 @@ function useCircle({ canvasRef, tool, onFinish, save }: Args) {
       if (h > w) {
         circle.set('scaleX', w / h)
       }
-      canvas.renderAll()
-    }
-
-    function onMouseUp() {
-      if (isDown) {
-        isDown = false
-        onFinish()
-        save()
-      }
-    }
-
-    if (tool === 'circle') {
-      canvas.on('mouse:down', onMouseDown)
-      canvas.on('mouse:move', onMouseMove)
-      canvas.on('mouse:up', onMouseUp)
-
-      return () => {
-        canvas.off('mouse:down', onMouseDown as any)
-        canvas.off('mouse:move', onMouseMove as any)
-        canvas.off('mouse:up', onMouseUp as any)
-      }
-    }
-  }, [canvasRef, tool, onFinish, save])
+    },
+  })
 }
 
 export { useCircle }
