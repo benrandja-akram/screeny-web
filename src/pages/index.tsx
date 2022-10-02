@@ -52,8 +52,8 @@ const Home: NextPage = () => {
     fabric.Object.prototype.cornerSize = 9
     fabric.Object.prototype.cornerColor = 'white'
     fabric.Object.prototype.transparentCorners = false
-    fabric.Object.prototype.cornerStrokeColor = '#0d99ff'
-    fabric.Object.prototype.borderColor = '#0d9affa0'
+    fabric.Object.prototype.cornerStrokeColor = '#4285f4'
+    fabric.Object.prototype.borderColor = '#4285f4'
 
     const save = () => {
       if (canSaveRef.current) {
@@ -104,6 +104,20 @@ const Home: NextPage = () => {
   useFreeDrawing(options)
   const [btnProps, inputProps] = useImage(options)
 
+  function resetObjects() {
+    canvasRef.current?.getObjects().map((obj) => {
+      obj.selectable = canvasRef.current?.selection
+      obj.evented = canvasRef.current?.selection
+      obj.objectCaching = false
+      if (obj.type !== 'textbox') {
+        obj.perPixelTargetFind = true
+      }
+      if (obj.type === 'polygon') {
+        obj.hasBorders = false
+        setupShapeControls(canvasRef.current!, obj as fabric.Polygon)
+      }
+    })
+  }
   return (
     <div className="bg-gray-100">
       <header className="fixed top-2 left-[50%] z-10 flex h-14 -translate-x-[50%] space-x-2 rounded-lg bg-white p-2 shadow">
@@ -156,19 +170,7 @@ const Home: NextPage = () => {
               canvasRef.current!.loadFromJSON(
                 historyManager.current.state ?? '{}',
                 () => {
-                  canvasRef.current?.getObjects().map((obj) => {
-                    obj.selectable = canvasRef.current?.selection
-                    obj.evented = canvasRef.current?.selection
-                    obj.perPixelTargetFind = true
-                    obj.objectCaching = false
-                    if (obj.type === 'polygon') {
-                      obj.hasBorders = false
-                      setupShapeControls(
-                        canvasRef.current!,
-                        obj as fabric.Polygon
-                      )
-                    }
-                  })
+                  resetObjects()
                   canSaveRef.current = true
                 }
               )
@@ -184,20 +186,7 @@ const Home: NextPage = () => {
               canvasRef.current!.loadFromJSON(
                 historyManager.current.state,
                 () => {
-                  canvasRef.current?.getObjects().map((obj) => {
-                    obj.selectable = canvasRef.current?.selection
-                    obj.evented = canvasRef.current?.selection
-                    obj.perPixelTargetFind = true
-                    obj.objectCaching = false
-
-                    if (obj.type === 'polygon') {
-                      obj.hasBorders = false
-                      setupShapeControls(
-                        canvasRef.current!,
-                        obj as fabric.Polygon
-                      )
-                    }
-                  })
+                  resetObjects()
                   canSaveRef.current = true
                 }
               )

@@ -25,15 +25,15 @@ function useSelect({ canvasRef, tool }: Args) {
     const canvas = canvasRef.current!
 
     function onSelectionCreated() {
-      if (!['polygon'].includes(canvas.getActiveObject().type!)) {
+      if (!['polygon', 'textbox'].includes(canvas.getActiveObject().type!)) {
         canvas.getActiveObject().perPixelTargetFind = false
       }
     }
     function onSelectionCleared(evt: fabric.IEvent) {
       // @ts-ignore
-      evt.deselected?.forEach(
-        (obj: fabric.Object) => (obj.perPixelTargetFind = true)
-      )
+      evt.deselected?.forEach((obj: fabric.Object) => {
+        if (obj.type !== 'textbox') obj.perPixelTargetFind = true
+      })
     }
 
     canvas.on('selection:created', onSelectionCreated)

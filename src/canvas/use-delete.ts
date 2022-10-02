@@ -5,7 +5,15 @@ function useDelete({ canvasRef }: Args) {
     const canvas = canvasRef.current!
 
     function onWindowKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (
+        (e.key === 'Delete' || e.key === 'Backspace') &&
+        !canvas.getActiveObjects().some((obj) => {
+          if (obj.type === 'textbox') {
+            return (obj as fabric.Textbox).isEditing
+          }
+          return false
+        })
+      ) {
         canvas.remove(...canvas.getActiveObjects())
         canvas.discardActiveObject()
       }
