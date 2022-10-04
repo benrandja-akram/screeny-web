@@ -5,3 +5,15 @@
 body {
   font-family: 'Inter', sans-serif;
 }
+
+@keyframes slide {
+  from {
+    transform: translateX(16px);
+  }
+  to {
+    transform: none;
+  }
+}
+.slideLeft {
+  animation: slide 0.15s ease-out;
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 
@@ -33,8 +33,10 @@ import {
 import { IconButton } from '../components'
 import { useCallbackRef } from '../utils'
 import { setupShapeControls } from '../utils/setup-shape-controls'
+import classNames from 'classnames'
 
 const Home: NextPage = () => {
+  const [, rerender] = useReducer((c) => c + 1, 0)
   const [tool, setTool] = useState('select')
   const canvasRef = useRef<fabric.Canvas>()
   const canvasEl = useRef<HTMLCanvasElement>(null)
@@ -42,6 +44,7 @@ const Home: NextPage = () => {
   const historyManager = useRef(new HistoryManager())
 
   useEffect(() => {
+    historyManager.current = new HistoryManager()
     canvasRef.current = new fabric.Canvas(canvasEl.current!, {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -118,6 +121,8 @@ const Home: NextPage = () => {
       }
     })
   }
+  const activeObject = canvasRef.current?.getActiveObject()
+
   return (
     <div className="bg-gray-100">
       <header className="fixed top-2 left-[50%] z-10 flex h-14 -translate-x-[50%] space-x-2 rounded-lg bg-white p-2 shadow">
@@ -227,7 +232,96 @@ const Home: NextPage = () => {
           </IconButton>
         </div>
       </header>
-
+      {activeObject &&
+        ['rect', 'circle', 'polygon', 'path'].includes(activeObject.type!) && (
+          <aside className="slideLeft fixed top-16 right-4 z-10 divide-y divide-slate-100 rounded-lg bg-white p-2 px-3 text-gray-700 shadow">
+            <div className="space-y-1.5 pb-3">
+              <div>Color</div>
+              <div className="grid grid-cols-5 gap-3">
+                {[
+                  '#0f172a',
+                  'white',
+                  '#4b5563',
+                  '#dc2626',
+                  '#ea580c',
+                  '#f59e0b',
+                  '#84cc16',
+                  '#14b8a6',
+                  '#06b6d4',
+                  '#2563eb',
+                  '#4f46e5',
+                  '#a855f7',
+                  '#c026d3',
+                  '#db2777',
+                  '#f43f5e',
+                ].map((color) => (
+                  <button
+                    key={color}
+                    style={{ background: color }}
+                    className={classNames(
+                      'h-7 w-7 rounded-full shadow transition-all',
+                      {
+                        'ring ring-indigo-500 ring-offset-2':
+                          color ===
+                          (activeObject.type === 'path'
+                            ? activeObject.fill
+                            : activeObject.stroke),
+                      }
+                    )}
+                    onClick={() => {
+                      if (activeObject.type === 'path') {
+                        activeObject.set('fill', color)
+                      } else {
+                        activeObject.set('stroke', color)
+                      }
+                      canvasRef.current?.requestRenderAll()
+                      rerender()
+                    }}
+                  ></button>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-1.5 py-2">
+              <div>Opacity</div>
+              <input
+                type="range"
+                defaultValue={activeObject.opacity}
+                className="w-full cursor-pointer"
+                max={1}
+                step={0.01}
+                onChange={(evt) => {
+                  activeObject.set('opacity', evt.target.valueAsNumber)
+                  canvasRef.current?.requestRenderAll()
+                }}
+              />
+            </div>
+            {activeObject.type !== 'path' && (
+              <div className="space-y-3 py-2">
+                <div>Stroke size</div>
+                <div className="grid grid-cols-3 ">
+                  {['S', 'M', 'L'].map((size, i) => (
+                    <button
+                      key={size}
+                      className={classNames(
+                        'h-7 w-10 rounded border border-gray-900 transition-all',
+                        {
+                          'ring ring-indigo-500 ring-offset-2':
+                            activeObject.strokeWidth === (i + 1) * 2,
+                        }
+                      )}
+                      onClick={() => {
+                        activeObject.set('strokeWidth', (i + 1) * 2)
+                        canvasRef.current?.requestRenderAll()
+                        rerender()
+                      }}
+                      style={{ borderWidth: (i + 1) * 2 }}
+                    ></button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
+        )}
       <div {...whiteboardProps}>
         <canvas ref={canvasEl} className="h-full w-full" />
       </div>

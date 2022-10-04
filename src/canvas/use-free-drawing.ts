@@ -59,7 +59,7 @@ function useFreeDrawing({ canvasRef, tool, onFinish, save }: Args) {
       points.push(evt.absolutePointer!)
       const stroke = getStroke(points, options)
       const pathData = getSvgPathFromStroke(stroke)
-      const svg = `<svg fill="black"><path d="${pathData}" /></svg>`
+      const svg = `<svg fill="#0f172a"><path d="${pathData}" /></svg>`
 
       fabric.loadSVGFromString(svg, function (objects, options) {
         const obj = fabric.util.groupSVGElements(objects, options)

@@ -17,13 +17,15 @@ function useLine({ canvasRef, tool, onFinish, save }: Args) {
         {
           left: x,
           top: y,
-          stroke: '#dc2626',
+          stroke: '#0f172a',
           strokeWidth: 4,
           perPixelTargetFind: true,
           strokeUniform: true,
           objectCaching: false,
           borderOpacityWhenMoving: 0,
           hasBorders: false,
+          originX: 'center',
+          originY: 'center',
         }
       )
 

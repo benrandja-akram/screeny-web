@@ -16,7 +16,7 @@ function useRect({ canvasRef, tool, onFinish, save }: Args) {
         left: x,
         top: y,
         fill: '#00000001',
-        stroke: '#dc2626',
+        stroke: '#0f172a',
         strokeWidth: 4,
         perPixelTargetFind: true,
         strokeUniform: true,

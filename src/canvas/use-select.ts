@@ -1,6 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useReducer } from 'react'
 
 function useSelect({ canvasRef, tool }: Args) {
+  const [_, rerender] = useReducer((c) => c + 1, 0)
+
   useEffect(() => {
     const canvas = canvasRef.current!
     if (tool === 'select') {
@@ -28,12 +30,16 @@ function useSelect({ canvasRef, tool }: Args) {
       if (!['polygon', 'textbox'].includes(canvas.getActiveObject().type!)) {
         canvas.getActiveObject().perPixelTargetFind = false
       }
+
+      rerender()
     }
     function onSelectionCleared(evt: fabric.IEvent) {
       // @ts-ignore
       evt.deselected?.forEach((obj: fabric.Object) => {
         if (obj.type !== 'textbox') obj.perPixelTargetFind = true
       })
+
+      rerender()
     }
 
     canvas.on('selection:created', onSelectionCreated)
