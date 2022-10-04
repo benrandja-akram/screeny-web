@@ -1,6 +1,7 @@
-import { useEffect, useReducer, useRef, useState } from 'react'
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
+import { debounce } from 'throttle-debounce'
 
 import {
   useCircle,
@@ -42,7 +43,13 @@ const Home: NextPage = () => {
   const canvasEl = useRef<HTMLCanvasElement>(null)
   const canSaveRef = useRef(true)
   const historyManager = useRef(new HistoryManager())
-
+  const saveDebounced = useMemo(
+    () =>
+      debounce(500, () =>
+        historyManager.current.push(canvasRef.current!.toJSON())
+      ),
+    []
+  )
   useEffect(() => {
     historyManager.current = new HistoryManager()
     canvasRef.current = new fabric.Canvas(canvasEl.current!, {
@@ -276,6 +283,7 @@ const Home: NextPage = () => {
                       }
                       canvasRef.current?.requestRenderAll()
                       rerender()
+                      historyManager.current.push(canvasRef.current!.toJSON())
                     }}
                   ></button>
                 ))}
@@ -292,6 +300,7 @@ const Home: NextPage = () => {
                 onChange={(evt) => {
                   activeObject.set('opacity', evt.target.valueAsNumber)
                   canvasRef.current?.requestRenderAll()
+                  saveDebounced()
                 }}
               />
             </div>
@@ -313,6 +322,7 @@ const Home: NextPage = () => {
                         activeObject.set('strokeWidth', (i + 1) * 2)
                         canvasRef.current?.requestRenderAll()
                         rerender()
+                        historyManager.current.push(canvasRef.current!.toJSON())
                       }}
                       style={{ borderWidth: (i + 1) * 2 }}
                     ></button>
