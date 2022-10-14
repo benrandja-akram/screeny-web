@@ -26,7 +26,7 @@ function useSelect({ canvasRef, tool }: Args) {
   useEffect(() => {
     const canvas = canvasRef.current!
 
-    function onSelectionCreated() {
+    function onSelectionChange() {
       if (!['polygon', 'textbox'].includes(canvas.getActiveObject().type!)) {
         canvas.getActiveObject().perPixelTargetFind = false
       }
@@ -42,11 +42,13 @@ function useSelect({ canvasRef, tool }: Args) {
       rerender()
     }
 
-    canvas.on('selection:created', onSelectionCreated)
+    canvas.on('selection:created', onSelectionChange)
+    canvas.on('selection:updated', onSelectionChange)
     canvas.on('selection:cleared', onSelectionCleared)
 
     return () => {
-      canvas.off('selection:created', onSelectionCreated)
+      canvas.off('selection:created', onSelectionChange)
+      canvas.off('selection:updated', onSelectionChange)
       canvas.off('selection:cleared', onSelectionCleared)
     }
   }, [canvasRef])

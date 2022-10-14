@@ -8,7 +8,7 @@ function useText({ canvasRef, tool, onFinish, save }: Args) {
     function onMouseDown(evt: fabric.IEvent<MouseEvent>) {
       const text = new fabric.Textbox('', {
         width: 32,
-        fontSize: 24,
+        fontSize: 28,
         left: evt.absolutePointer!.x,
         top: evt.absolutePointer!.y - 12,
       })

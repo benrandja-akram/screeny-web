@@ -31,7 +31,7 @@ import {
   BiZoomIn,
   AiOutlineLine,
 } from '../icons'
-import { IconButton } from '../components'
+import { ColorChooser, IconButton } from '../components'
 import { useCallbackRef } from '../utils'
 import { setupShapeControls } from '../utils/setup-shape-controls'
 import classNames from 'classnames'
@@ -240,55 +240,59 @@ const Home: NextPage = () => {
         </div>
       </header>
       {activeObject &&
-        ['rect', 'circle', 'polygon', 'path'].includes(activeObject.type!) && (
+        ['rect', 'circle', 'polygon', 'path', 'textbox'].includes(
+          activeObject.type!
+        ) && (
           <aside className="slideLeft fixed top-16 right-4 z-10 divide-y divide-slate-100 rounded-lg bg-white p-2 px-3 text-gray-700 shadow">
             <div className="space-y-1.5 pb-3">
-              <div>Color</div>
-              <div className="grid grid-cols-5 gap-3">
-                {[
-                  '#0f172a',
-                  'white',
-                  '#4b5563',
-                  '#dc2626',
-                  '#ea580c',
-                  '#f59e0b',
-                  '#84cc16',
-                  '#14b8a6',
-                  '#06b6d4',
-                  '#2563eb',
-                  '#4f46e5',
-                  '#a855f7',
-                  '#c026d3',
-                  '#db2777',
-                  '#f43f5e',
-                ].map((color) => (
-                  <button
-                    key={color}
-                    style={{ background: color }}
-                    className={classNames(
-                      'h-7 w-7 rounded-full shadow transition-all',
-                      {
-                        'ring ring-indigo-500 ring-offset-2':
-                          color ===
-                          (activeObject.type === 'path'
-                            ? activeObject.fill
-                            : activeObject.stroke),
-                      }
-                    )}
-                    onClick={() => {
-                      if (activeObject.type === 'path') {
-                        activeObject.set('fill', color)
-                      } else {
-                        activeObject.set('stroke', color)
-                      }
-                      canvasRef.current?.requestRenderAll()
-                      rerender()
-                      historyManager.current.push(canvasRef.current!.toJSON())
-                    }}
-                  ></button>
-                ))}
-              </div>
+              <div>Stroke</div>
+              <ColorChooser
+                selected={
+                  ['path', 'textbox'].includes(activeObject.type!)
+                    ? (activeObject.fill as string)
+                    : (activeObject.stroke as string)
+                }
+                style={{
+                  backgroundColor: 'white',
+                  borderWidth: !['path', 'textbox'].includes(activeObject.type!)
+                    ? activeObject.strokeWidth
+                    : 4,
+                }}
+                onColorSelect={(color) => {
+                  if (activeObject.type === 'path') {
+                    activeObject.set('fill', color)
+                  } else if (activeObject.type === 'textbox') {
+                    activeObject.set('fill', color)
+                  } else {
+                    activeObject.set('stroke', color)
+                  }
+                  canvasRef.current?.requestRenderAll()
+                  rerender()
+                  historyManager.current.push(canvasRef.current!.toJSON())
+                }}
+              />
             </div>
+            {!['path', 'polygon', 'textbox'].includes(activeObject?.type!) && (
+              <div className="space-y-1.5 py-2 pb-3">
+                <div>Fill</div>
+                <ColorChooser
+                  selected={activeObject.fill as string}
+                  style={{
+                    borderWidth:
+                      activeObject.type !== 'path'
+                        ? activeObject.strokeWidth
+                        : 4,
+                  }}
+                  onColorSelect={(color) => {
+                    activeObject.set('fill', color)
+
+                    canvasRef.current?.requestRenderAll()
+                    rerender()
+                    historyManager.current.push(canvasRef.current!.toJSON())
+                  }}
+                />
+              </div>
+            )}
             <div className="space-y-1.5 py-2">
               <div>Opacity</div>
               <input
@@ -304,7 +308,7 @@ const Home: NextPage = () => {
                 }}
               />
             </div>
-            {activeObject.type !== 'path' && (
+            {!['path', 'textbox'].includes(activeObject.type!) && (
               <div className="space-y-3 py-2">
                 <div>Stroke size</div>
                 <div className="grid grid-cols-3 ">
