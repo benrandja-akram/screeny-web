@@ -35,9 +35,10 @@ import { ColorChooser, IconButton } from '../components'
 import { useCallbackRef } from '../utils'
 import { setupShapeControls } from '../utils/setup-shape-controls'
 import classNames from 'classnames'
+import localforage from 'localforage'
 
 const Home: NextPage = () => {
-  const [, rerender] = useReducer((c) => c + 1, 0)
+  const [isMounted, rerender] = useReducer((c) => c + 1, 0)
   const [tool, setTool] = useState('select')
   const canvasRef = useRef<fabric.Canvas>()
   const canvasEl = useRef<HTMLCanvasElement>(null)
@@ -58,6 +59,18 @@ const Home: NextPage = () => {
     })
 
     const canvas = canvasRef.current!
+    async function load() {
+      const json = await localforage.getItem('whiteboard')
+      if (json) {
+        canSaveRef.current = false
+        canvas.loadFromJSON(json, () => {
+          resetObjects()
+          canSaveRef.current = true
+          historyManager.current.push(canvas.toJSON())
+        })
+      }
+    }
+    load()
 
     fabric.Object.prototype.cornerSize = 9
     fabric.Object.prototype.cornerColor = 'white'
@@ -79,7 +92,7 @@ const Home: NextPage = () => {
 
     canvas.on('object:modified', save)
     canvas.on('object:removed', onRemove)
-
+    rerender()
     return () => {
       canvas.off('object:modified', save)
       canvas.off('object:removed', onRemove)
@@ -336,7 +349,13 @@ const Home: NextPage = () => {
             )}
           </aside>
         )}
-      <div {...whiteboardProps}>
+      <div
+        {...whiteboardProps}
+        className={classNames(
+          'transition-all duration-1000',
+          isMounted ? 'opacity-100' : 'opacity-0'
+        )}
+      >
         <canvas ref={canvasEl} className="h-full w-full" />
       </div>
     </div>
