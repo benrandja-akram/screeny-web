@@ -2,6 +2,9 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { NextPage } from 'next'
 import { fabric } from 'fabric'
 import { debounce } from 'throttle-debounce'
+import classNames from 'classnames'
+import localforage from 'localforage'
+import { LazyMotion, domAnimation, AnimatePresence, m } from 'framer-motion'
 
 import {
   useCircle,
@@ -34,8 +37,6 @@ import {
 import { ColorChooser, IconButton } from '../components'
 import { useCallbackRef } from '../utils'
 import { setupShapeControls } from '../utils/setup-shape-controls'
-import classNames from 'classnames'
-import localforage from 'localforage'
 
 const Home: NextPage = () => {
   const [isMounted, rerender] = useReducer((c) => c + 1, 0)
@@ -66,7 +67,9 @@ const Home: NextPage = () => {
         canvas.loadFromJSON(json, () => {
           resetObjects()
           canSaveRef.current = true
-          historyManager.current.push(canvas.toJSON())
+
+          const hManager = new HistoryManager(canvas.toJSON())
+          historyManager.current = hManager
         })
       }
     }
@@ -252,103 +255,119 @@ const Home: NextPage = () => {
           </IconButton>
         </div>
       </header>
-      {activeObject &&
-        ['rect', 'circle', 'polygon', 'path', 'textbox'].includes(
-          activeObject.type!
-        ) && (
-          <aside className="slideLeft fixed top-16 right-4 z-10 divide-y divide-slate-100 rounded-lg bg-white p-2 px-3 text-gray-700 shadow">
-            <div className="space-y-1.5 pb-3">
-              <div>Stroke</div>
-              <ColorChooser
-                selected={
-                  ['path', 'textbox'].includes(activeObject.type!)
-                    ? (activeObject.fill as string)
-                    : (activeObject.stroke as string)
-                }
-                style={{
-                  backgroundColor: 'white',
-                  borderWidth: !['path', 'textbox'].includes(activeObject.type!)
-                    ? activeObject.strokeWidth
-                    : 4,
-                }}
-                onColorSelect={(color) => {
-                  if (activeObject.type === 'path') {
-                    activeObject.set('fill', color)
-                  } else if (activeObject.type === 'textbox') {
-                    activeObject.set('fill', color)
-                  } else {
-                    activeObject.set('stroke', color)
-                  }
-                  canvasRef.current?.requestRenderAll()
-                  rerender()
-                  historyManager.current.push(canvasRef.current!.toJSON())
-                }}
-              />
-            </div>
-            {!['path', 'polygon', 'textbox'].includes(activeObject?.type!) && (
-              <div className="space-y-1.5 py-2 pb-3">
-                <div>Fill</div>
-                <ColorChooser
-                  selected={activeObject.fill as string}
-                  style={{
-                    borderWidth:
-                      activeObject.type !== 'path'
+      <LazyMotion features={domAnimation}>
+        <AnimatePresence>
+          {activeObject &&
+            ['rect', 'circle', 'polygon', 'path', 'textbox'].includes(
+              activeObject.type!
+            ) && (
+              <m.aside
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 250, opacity: 0 }}
+                className="fixed top-16 right-4 z-10 divide-y divide-slate-100 rounded-lg bg-white p-2 px-3 text-gray-700 shadow"
+              >
+                <div className="space-y-1.5 pb-3">
+                  <div>Stroke</div>
+                  <ColorChooser
+                    selected={
+                      ['path', 'textbox'].includes(activeObject.type!)
+                        ? (activeObject.fill as string)
+                        : (activeObject.stroke as string)
+                    }
+                    style={{
+                      backgroundColor: 'white',
+                      borderWidth: !['path', 'textbox'].includes(
+                        activeObject.type!
+                      )
                         ? activeObject.strokeWidth
                         : 4,
-                  }}
-                  onColorSelect={(color) => {
-                    activeObject.set('fill', color)
+                    }}
+                    onColorSelect={(color) => {
+                      if (activeObject.type === 'path') {
+                        activeObject.set('fill', color)
+                      } else if (activeObject.type === 'textbox') {
+                        activeObject.set('fill', color)
+                      } else {
+                        activeObject.set('stroke', color)
+                      }
+                      canvasRef.current?.requestRenderAll()
+                      rerender()
+                      historyManager.current.push(canvasRef.current!.toJSON())
+                    }}
+                  />
+                </div>
+                {!['path', 'polygon', 'textbox'].includes(
+                  activeObject?.type!
+                ) && (
+                  <div className="space-y-1.5 py-2 pb-3">
+                    <div>Fill</div>
+                    <ColorChooser
+                      selected={activeObject.fill as string}
+                      style={{
+                        borderWidth:
+                          activeObject.type !== 'path'
+                            ? activeObject.strokeWidth
+                            : 4,
+                      }}
+                      onColorSelect={(color) => {
+                        activeObject.set('fill', color)
 
-                    canvasRef.current?.requestRenderAll()
-                    rerender()
-                    historyManager.current.push(canvasRef.current!.toJSON())
-                  }}
-                />
-              </div>
-            )}
-            <div className="space-y-1.5 py-2">
-              <div>Opacity</div>
-              <input
-                type="range"
-                defaultValue={activeObject.opacity}
-                className="w-full cursor-pointer"
-                max={1}
-                step={0.01}
-                onChange={(evt) => {
-                  activeObject.set('opacity', evt.target.valueAsNumber)
-                  canvasRef.current?.requestRenderAll()
-                  saveDebounced()
-                }}
-              />
-            </div>
-            {!['path', 'textbox'].includes(activeObject.type!) && (
-              <div className="space-y-3 py-2">
-                <div>Stroke size</div>
-                <div className="grid grid-cols-3 ">
-                  {['S', 'M', 'L'].map((size, i) => (
-                    <button
-                      key={size}
-                      className={classNames(
-                        'h-7 w-10 rounded border border-gray-900 transition-all',
-                        {
-                          'ring ring-indigo-500 ring-offset-2':
-                            activeObject.strokeWidth === (i + 1) * 2,
-                        }
-                      )}
-                      onClick={() => {
-                        activeObject.set('strokeWidth', (i + 1) * 2)
                         canvasRef.current?.requestRenderAll()
                         rerender()
                         historyManager.current.push(canvasRef.current!.toJSON())
                       }}
-                      style={{ borderWidth: (i + 1) * 2 }}
-                    ></button>
-                  ))}
+                    />
+                  </div>
+                )}
+                <div className="space-y-1.5 py-2">
+                  <div>Opacity</div>
+                  <input
+                    type="range"
+                    defaultValue={activeObject.opacity}
+                    className="w-full cursor-pointer"
+                    max={1}
+                    step={0.01}
+                    onChange={(evt) => {
+                      activeObject.set('opacity', evt.target.valueAsNumber)
+                      canvasRef.current?.requestRenderAll()
+                      saveDebounced()
+                    }}
+                  />
                 </div>
-              </div>
+                {!['path', 'textbox'].includes(activeObject.type!) && (
+                  <div className="space-y-3 py-2">
+                    <div>Stroke size</div>
+                    <div className="grid grid-cols-3 ">
+                      {['S', 'M', 'L'].map((size, i) => (
+                        <button
+                          key={size}
+                          className={classNames(
+                            'h-7 w-10 rounded border border-gray-900 transition-all',
+                            {
+                              'ring ring-indigo-500 ring-offset-2':
+                                activeObject.strokeWidth === (i + 1) * 2,
+                            }
+                          )}
+                          onClick={() => {
+                            activeObject.set('strokeWidth', (i + 1) * 2)
+                            canvasRef.current?.requestRenderAll()
+                            rerender()
+                            historyManager.current.push(
+                              canvasRef.current!.toJSON()
+                            )
+                          }}
+                          style={{ borderWidth: (i + 1) * 2 }}
+                        ></button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </m.aside>
             )}
-          </aside>
-        )}
+        </AnimatePresence>
+      </LazyMotion>
+
       <div
         {...whiteboardProps}
         className={classNames(
